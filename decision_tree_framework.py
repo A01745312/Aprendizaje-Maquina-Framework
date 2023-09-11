@@ -31,8 +31,8 @@ def load_data():
 def train_model(x, y, max_depth=None):
     # Dividir los datos en 2: entrenamiento y testing (temp)
     x_train, x_temp, y_train, y_temp = train_test_split(x, y, 
-                                            test_size=0.2, random_state=42)
-    # Dividir los datos para testing y validación
+                                            test_size=0.3, random_state=42)
+    # Dividir los datos para testing y validacións
     x_val, x_test, y_val, y_test = train_test_split(x_temp, y_temp, 
                                             test_size=0.5, random_state=42)
     # Crear modelo de árbol de decisión con profundidad y 
@@ -43,7 +43,6 @@ def train_model(x, y, max_depth=None):
     # Regresa los datos de entrenamiento, validación, testing 
     # y el modelo entrenado
     return x_train, x_val, x_test, y_train, y_val, y_test, clf
-
 
 def evaluate_model(max_depth, clf, x, y, data_type):
     # Realiza predicciones de los datos de la variable x (train o test)
@@ -61,6 +60,17 @@ def evaluate_model(max_depth, clf, x, y, data_type):
     print(f'Classification Report:\n{classification}')
     # Manda llamar la función que crea la gráfica de la matriz de confusión
     c_matrix(max_depth, data_type, confusion)
+
+    if data_type == "Validation":  # Agrega evaluación para el conjunto de validación
+        # Predice usando los datos de validación
+        val_pred = clf.predict(x_val)
+        # Calcula la precisión
+        val_accuracy = accuracy_score(y_val, val_pred)
+        # Crea el informe de clasificación
+        val_classification = classification_report(y_val, val_pred, 
+                                zero_division=0, target_names=target_names)
+        # Crea la matriz de confusión
+        val_confusion = confusion_matrix(y_val, val_pred)
 
 
 def c_matrix(max_depth, data_type, matrix):
@@ -96,16 +106,19 @@ if __name__ == "__main__":
         # Obtiene los datos para entrenamiento, validación, test y el modelo entrenado
         x_train, x_val, x_test, y_train, y_val, y_test, clf = train_model(x, 
                                                                     y, max_depth)
+        
         # Muestra la ejecución que está corriendo como la profundidad máxima con la que 
-        # se esta entrenando
+        # se está entrenando
         print(f'\n*****   RUN {max_depth}   *****\nMax Depth: {max_depth}\n')
         print('                      ~ TRAINING DATA ~\n')
         # Se evalua el modelo con los datos de entrenamiento
         evaluate_model(max_depth, clf, x_train, y_train, "Training")
         print('\n                      ~ TEST DATA ~')
-        # Se evaulua el modelo con los datos de testing
+        # Se evalua el modelo con los datos de testing
         evaluate_model(max_depth, clf, x_test, y_test, "Test")
+        print('\n                      ~ VALIDATION DATA ~')
+        # Se evalúa el modelo con los datos de validación
+        evaluate_model(max_depth, clf, x_val, y_val, "Validation")
         print('-' * 40)
-    
     # Llama la función que hace la predicción con los datos de un vino nuevo
     prediction(clf)
