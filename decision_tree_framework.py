@@ -1,3 +1,10 @@
+# Paula Sophia Santoyo Arteaga
+# A01745312
+# 11-Sept-2023
+# Uso de framework de aprendizaje máquina para la implementación de una solución
+# ------------------------------------------------------------------------------
+
+
 # Importar librerias
 import matplotlib.pyplot as plt
 import seaborn as sns
